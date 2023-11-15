@@ -46,9 +46,7 @@ contract PublicSaleLock is ITokenLock, Ownable, ReentrancyGuard {
     }
 
     function getReleaseNumerator(uint256 _periods) internal pure returns (uint256) {
-        if (_periods == 0) {
-            return 0;
-        } else if (_periods == 1) {
+        if (_periods == 1) {
             return 2000;
         } else if (_periods == 2) {
             return 5000;
