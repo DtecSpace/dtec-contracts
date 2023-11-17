@@ -56,12 +56,6 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
         }
     }
 
-    // For testing purposes only
-    function setStableAddresses(address _usdc, address _usdt) external onlyOwner {
-        USDC = _usdc;
-        USDT = _usdt;
-    }
-
     function setImmediateReleaseRate(uint256 _rate) public onlyOwner {
         immediateReleaseRate = _rate;
     }
