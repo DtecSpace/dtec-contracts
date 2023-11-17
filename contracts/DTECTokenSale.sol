@@ -28,6 +28,8 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
     error CantBuy();
 
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) {
+        require (_receiver != address(0) && _dtecAddress != address(0) 
+        && _lockerAddress != address(0) , "Invalid address") ;
         paymentReceiver = _receiver;
         dtecTokenAddress = _dtecAddress;
         lockerAddress = _lockerAddress;
@@ -37,6 +39,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
 
     function addMods(address[] calldata _mods) external onlyOwner {
         for (uint256 i = 0; i < _mods.length; i++) {
+            require (_mods[i] != address(0) , "Invalid address") ;
             mods[_mods[i]] = 1;
         }
     }
@@ -64,6 +67,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
     }
 
     function setPaymentReceiver(address _receiver) external onlyOwner {
+        require (_receiver != address(0) , "Invalid address") ;
         paymentReceiver = _receiver;
     }
 
@@ -130,6 +134,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
     }
 
     function claimAllocation(address _to) external {
+        require (_to != address(0) , "Invalid address") ;
         uint256 allocation = allocations[msg.sender];
         if (allocation == 0) {
             revert CantBuy();

@@ -24,6 +24,7 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
     }
 
     constructor(address _dtecAddress) {
+        require (_dtecAddress != address(0) , "Invalid address") ;
         dtecTokenAddress = _dtecAddress;
     }
 
@@ -34,6 +35,7 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
     }
 
     function setTokenLocker(address _locker) external onlyOwner {
+        require (_locker != address(0) , "Invalid address") ;
         tokenLocker = _locker;
     }
 

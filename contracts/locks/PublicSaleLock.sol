@@ -23,6 +23,7 @@ contract PublicSaleLock is ITokenLock, Ownable, ReentrancyGuard {
     }
 
     constructor(address _dtecAddress, address _locker) {
+        require (_dtecAddress != address(0) && _locker != address(0) , "Invalid address") ;
         dtecTokenAddress = _dtecAddress;
         tokenLocker = _locker;
         lockStartTime = 1704153601;
@@ -34,6 +35,7 @@ contract PublicSaleLock is ITokenLock, Ownable, ReentrancyGuard {
     }
 
     function setTokenLocker(address _locker) external onlyOwner {
+        require (_locker != address(0) , "Invalid address") ;
         tokenLocker = _locker;
     }
 

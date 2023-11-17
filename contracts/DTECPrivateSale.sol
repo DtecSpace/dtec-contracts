@@ -23,6 +23,7 @@ contract DTECPrivateSale is DTECTokenSale {
             revert Unauthorized();
         }
         for (uint256 i = 0; i < _wallets.length; i++) {
+            require (_wallets[i] != address(0) , "Invalid address") ;
             wl[_wallets[i]] = 1;
         }
     }

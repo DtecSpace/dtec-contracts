@@ -23,6 +23,7 @@ contract Vesting is Ownable, ReentrancyGuard {
     }
 
     constructor(address _dtecAddress) {
+        require (_dtecAddress != address(0) , "Invalid address") ;
         dtecTokenAddress = _dtecAddress;
     }
 
