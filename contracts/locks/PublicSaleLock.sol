@@ -8,7 +8,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract PublicSaleLock is ITokenLock, Ownable, ReentrancyGuard {
     mapping(address => LockInfo) public userToLockInfo;
-    address public dtecTokenAddress;
+    address public immutable dtecTokenAddress;
     address public tokenLocker;
     uint256 public period = 30 days;
     uint256 public lockStartTime;

@@ -16,8 +16,8 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
     mapping(address => uint256) public allocations;
     uint256 totalAllocated;
 
-    address public lockerAddress;
-    address public dtecTokenAddress;
+    address public immutable lockerAddress;
+    address public immutable dtecTokenAddress;
     address private paymentReceiver;
     uint256 public immediateReleaseRate;
     address public USDC = 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359;
