@@ -30,6 +30,7 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
 
     // Base rate 10000
     function setReleaseInfo(uint256 _startTime, uint256 _rate) public onlyOwner {
+        require(_rate > 0 , "Value must be greater than zero.");
         lockStartTime = _startTime;
         releaseRate = _rate;
     }
@@ -40,6 +41,7 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
     }
 
     function setPeriod(uint256 _period) external onlyOwner {
+        require(_period > 0 , "Value must be greater than zero.");
         // This is for testing only but still we won't allow +30 days period
         if (_period > 30 days) {
             revert OutOfExpectedRange();

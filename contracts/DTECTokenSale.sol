@@ -66,6 +66,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
     }
 
     function setSalePrice(uint256 _price) public onlyOwner {
+        require(_price > 0 , "Value must be greater than zero.");
         salePrice = _price;
     }
 

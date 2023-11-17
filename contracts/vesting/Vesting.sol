@@ -29,11 +29,13 @@ contract Vesting is Ownable, ReentrancyGuard {
 
     // Base rate 10000
     function setReleaseInfo(uint256 _startTime, uint256 _rate) internal onlyOwner {
+        require(_rate > 0 , "Value must be greater than zero.");
         lockStartTime = _startTime;
         releaseRate = _rate;
     }
 
     function setPeriod(uint256 _period) internal onlyOwner {
+        require(_period > 0 , "Value must be greater than zero.");
         period = _period;
     }
 

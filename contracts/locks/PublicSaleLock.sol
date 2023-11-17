@@ -40,6 +40,7 @@ contract PublicSaleLock is ITokenLock, Ownable, ReentrancyGuard {
     }
 
     function setPeriod(uint256 _period) external onlyOwner {
+        require(_period > 0 , "Value must be greater than zero.");
         // This is for testing only but still we won't allow +30 days period
         if (_period > 30 days) {
             revert OutOfExpectedRange();
