@@ -16,7 +16,7 @@ contract DTECPrivateSale is DTECTokenSale {
     error OverUnderAllowedAmt();
 
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
-        setImmediateReleaseRate(200);
+        setImmediateReleaseRate(100);
         setSalePrice(0.07 ether);
     }
 
