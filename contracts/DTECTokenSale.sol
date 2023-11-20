@@ -89,6 +89,8 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
 
     function pullTokens(uint256 _amt) public onlyOwner {
         IERC20 dtec = IERC20(dtecTokenAddress);
+        uint256 availableBalance = dtec.balanceOf(address(this)) - totalAllocated;
+        require(_amt <= availableBalance , "Insufficient unallocated tokens");
         dtec.transfer(owner(), _amt);
         emit TokensPulled(_amt);
     }
