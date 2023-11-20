@@ -4,8 +4,8 @@ pragma solidity ^0.8.17;
 import {DTECTokenSale} from './DTECTokenSale.sol';
 
 contract DTECPrivateSale is DTECTokenSale {
-    uint256 public constant MIN_TOKENS_TO_BUY = 71428;
-    uint256 public constant MAX_TOKENS_TO_BUY = 1428572;
+    uint256 public constant MIN_TOKENS_TO_BUY = 83200;
+    uint256 public constant MAX_TOKENS_TO_BUY = 5000000;
 
     mapping(address => uint8) public wl;
     mapping(address => uint256) public addressToBoughtAmt;
