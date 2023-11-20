@@ -16,7 +16,6 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
 
     event ReleaseInfoSet(uint256 startTime, uint256 rate);
     event TokenLockerSet(address indexed locker);
-    event PeriodSet(uint256 period);
     event Claimed(address indexed user, uint256 timestamp, uint256 claimedAmount, 
     uint256 totalClaimed, uint256 totalAmount);
     event TokensLocked(address indexed user, uint256 timestamp, uint256 amount);
@@ -47,16 +46,6 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
         require (_locker != address(0) , "Invalid address") ;
         tokenLocker = _locker;
         emit TokenLockerSet(_locker);
-    }
-
-    function setPeriod(uint256 _period) external onlyOwner {
-        require(_period > 0 , "Value must be greater than zero.");
-        // This is for testing only but still we won't allow +30 days period
-        if (_period > 30 days) {
-            revert OutOfExpectedRange();
-        }
-        period = _period;
-        emit PeriodSet(_period);
     }
 
     function getClaimable(address _user) public view returns (uint256) {
