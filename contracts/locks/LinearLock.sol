@@ -14,6 +14,13 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
     uint256 public releaseRate;
     uint256 public lockStartTime;
 
+    event ReleaseInfoSet(uint256 startTime, uint256 rate);
+    event TokenLockerSet(address indexed locker);
+    event PeriodSet(uint256 period);
+    event Claimed(address indexed user, uint256 timestamp, uint256 claimedAmount, 
+    uint256 totalClaimed, uint256 totalAmount);
+    event TokensLocked(address indexed user, uint256 timestamp, uint256 amount);
+
     error Unauthorized();
     error NothingToClaim();
     error OutOfExpectedRange();
@@ -33,11 +40,13 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
         require(_rate > 0 , "Value must be greater than zero.");
         lockStartTime = _startTime;
         releaseRate = _rate;
+        emit ReleaseInfoSet(_startTime, _rate);
     }
 
     function setTokenLocker(address _locker) external onlyOwner {
         require (_locker != address(0) , "Invalid address") ;
         tokenLocker = _locker;
+        emit TokenLockerSet(_locker);
     }
 
     function setPeriod(uint256 _period) external onlyOwner {
@@ -47,6 +56,7 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
             revert OutOfExpectedRange();
         }
         period = _period;
+        emit PeriodSet(_period);
     }
 
     function getClaimable(address _user) public view returns (uint256) {
@@ -75,6 +85,7 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
         info.totalClaimed = info.totalClaimed + claimable;
         IERC20 dtec = IERC20(dtecTokenAddress);
         dtec.transfer(msg.sender, claimable);
+        emit Claimed(msg.sender, block.timestamp, claimable, info.totalClaimed, info.totalAmount);
     }
 
     function lockTokens(address _user, uint256 _amt) external {
@@ -83,5 +94,6 @@ contract LinearLock is ITokenLock, Ownable, ReentrancyGuard {
         }
         LockInfo storage info = userToLockInfo[_user];
         info.totalAmount += _amt;
+        emit TokensLocked(_user, block.timestamp,_amt);
     }
 }

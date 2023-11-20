@@ -25,6 +25,18 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
 
     uint256 public amountSold;
 
+    event ModsAdded(address[] mods);
+    event PausedToggled(bool isPaused);
+    event ImmediateReleaseRateSet(uint256 rate);
+    event PaymentReceiverSet(address receiver);
+    event SalePriceSet(uint256 price);
+    event TokensPulled(uint256 amount);
+    event TokensBought(address indexed user, uint256 timestamp, uint256 totalAmount,
+    uint256 releasedAmount, uint256 lockedAmount, bool preferUSDC);
+    event TokensAllocated(address indexed user, uint256 timestamp, uint256 amount, bool preferUSDC);
+    event AllocationClaimed(address indexed oldUser, address indexed newUser, uint256 timestamp, 
+    uint256 totalAllocation, uint256 releasedAmount, uint256 lockedAmount);
+
     error CantBuy();
 
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) {
@@ -42,6 +54,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
             require (_mods[i] != address(0) , "Invalid address") ;
             mods[_mods[i]] = 1;
         }
+        emit ModsAdded(_mods);
     }
 
     function isMod(address _adr) internal view returns (bool) {
@@ -54,25 +67,30 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
         } else {
             _pause();
         }
+        emit PausedToggled(paused());
     }
 
     function setImmediateReleaseRate(uint256 _rate) public onlyOwner {
         immediateReleaseRate = _rate;
+        emit ImmediateReleaseRateSet(_rate);
     }
 
     function setPaymentReceiver(address _receiver) external onlyOwner {
         require (_receiver != address(0) , "Invalid address") ;
         paymentReceiver = _receiver;
+        emit PaymentReceiverSet(_receiver);
     }
 
     function setSalePrice(uint256 _price) public onlyOwner {
         require(_price > 0 , "Value must be greater than zero.");
         salePrice = _price;
+        emit SalePriceSet(_price);
     }
 
     function pullTokens(uint256 _amt) public onlyOwner {
         IERC20 dtec = IERC20(dtecTokenAddress);
         dtec.transfer(owner(), _amt);
+        emit TokensPulled(_amt);
     }
 
     function getBuyCost(uint256 _amt) external view returns (uint256) {
@@ -118,6 +136,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
             dtec.transfer(_user, releaseAmount);
         }
         amountSold += _amt;
+        emit TokensBought(_user, block.timestamp, _amt, releaseAmount, lockAmount, _preferUSDC);
     }
 
     function nonWeb3UserAllocate(address _user, uint256 _amt, bool _preferUSDC) internal whenNotPaused {
@@ -126,6 +145,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
         allocations[_user] += amtInWei;
         totalAllocated += amtInWei;
         amountSold += _amt;
+        emit TokensAllocated(_user, block.timestamp, amtInWei, _preferUSDC);
     }
 
     function claimAllocation(address _to) external {
@@ -145,6 +165,7 @@ abstract contract DTECTokenSale is Ownable, Pausable, ReentrancyGuard {
         if (releaseAmount > 0) {
             dtec.transfer(_to, releaseAmount);
         }
+        emit AllocationClaimed(msg.sender, _to, block.timestamp, allocation, releaseAmount, lockAmount);
     }
 
     function buyTokens(uint256 _amt, bool _preferUSDC) external virtual;

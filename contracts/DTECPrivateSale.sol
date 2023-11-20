@@ -10,6 +10,8 @@ contract DTECPrivateSale is DTECTokenSale {
     mapping(address => uint8) public wl;
     mapping(address => uint256) public addressToBoughtAmt;
 
+    event WlsAdded(address[] wls);
+
     error Unauthorized();
     error OverUnderAllowedAmt();
 
@@ -26,6 +28,7 @@ contract DTECPrivateSale is DTECTokenSale {
             require (_wallets[i] != address(0) , "Invalid address") ;
             wl[_wallets[i]] = 1;
         }
+        emit WlsAdded(_wallets);
     }
 
     function buyTokens(uint256 _amt, bool _preferUSDC) external override nonReentrant {

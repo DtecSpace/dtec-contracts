@@ -13,6 +13,12 @@ contract Vesting is Ownable, ReentrancyGuard {
     uint256 public releaseRate;
     uint256 public lockStartTime;
 
+    event ReleaseInfoSet(uint256 startTime, uint256 rate);
+    event PeriodSet(uint256 period);
+    event Claimed(address indexed user, uint256 timestamp, uint256 claimedAmount, 
+    uint256 totalClaimed, uint256 totalAmount);
+    event TokensLocked(address indexed user, uint256 timestamp, uint256 amount);
+
     error Unauthorized();
     error NothingToClaim();
     error OutOfExpectedRange();
@@ -32,16 +38,19 @@ contract Vesting is Ownable, ReentrancyGuard {
         require(_rate > 0 , "Value must be greater than zero.");
         lockStartTime = _startTime;
         releaseRate = _rate;
+        emit ReleaseInfoSet(_startTime, _rate);
     }
 
     function setPeriod(uint256 _period) internal onlyOwner {
         require(_period > 0 , "Value must be greater than zero.");
         period = _period;
+        emit PeriodSet(_period);
     }
 
     function lockTokens(address _user, uint256 _amt) external onlyOwner {
         LockInfo storage info = userToLockInfo[_user];
         info.totalAmount += _amt;
+        emit TokensLocked(_user, block.timestamp,_amt);
     }
 
     function getClaimable(address _user) public view returns (uint256) {
@@ -70,5 +79,6 @@ contract Vesting is Ownable, ReentrancyGuard {
         info.totalClaimed = info.totalClaimed + claimable;
         IERC20 dtec = IERC20(dtecTokenAddress);
         dtec.transfer(msg.sender, claimable);
+        emit Claimed(msg.sender, block.timestamp, claimable, info.totalClaimed, info.totalAmount);
     }
 }
