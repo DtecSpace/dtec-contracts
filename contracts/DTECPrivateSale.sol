@@ -17,7 +17,7 @@ contract DTECPrivateSale is DTECTokenSale {
 
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
         setImmediateReleaseRate(100);
-        setSalePrice(0.07 ether);
+        setSalePrice(60000); // Corresponding 0.06 USD, USDC and USDT have 6 decimals 
     }
 
     function addWLs(address[] calldata _wallets) external {

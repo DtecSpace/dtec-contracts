@@ -13,7 +13,7 @@ contract DTECPreSale is DTECTokenSale {
 
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
         setImmediateReleaseRate(600);
-        setSalePrice(0.095 ether);
+        setSalePrice(80000); // Corresponding 0.08 USD, USDC and USDT have 6 decimals 
     }
 
     function buyTokens(uint256 _amt, bool _preferUSDC) external override nonReentrant {
