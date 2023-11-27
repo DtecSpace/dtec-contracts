@@ -5,7 +5,8 @@ import {DTECTokenSale} from './DTECTokenSale.sol';
 
 contract DTECPreSale is DTECTokenSale {
     uint256 public constant MIN_TOKENS_TO_BUY = 3700;
-    uint256 public constant MAX_TOKENS_TO_BUY = 250000;
+    uint256 public constant MAX_TOKENS_TO_BUY = 375000;
+    uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 1200; 
 
     mapping(address => uint256) addressToBoughtAmt;
 
@@ -18,7 +19,9 @@ contract DTECPreSale is DTECTokenSale {
 
     function buyTokens(uint256 _amt, bool _preferUSDC) external override nonReentrant {
         if (_amt < MIN_TOKENS_TO_BUY) {
-            revert OverUnderAllowedAmt();
+            if (addressToBoughtAmt[msg.sender] == 0 || _amt < MIN_TOKENS_TO_ADDITION_BUY) {
+                revert OverUnderAllowedAmt();
+            }
         }
         addressToBoughtAmt[msg.sender] = addressToBoughtAmt[msg.sender] + _amt;
         if (addressToBoughtAmt[msg.sender] > MAX_TOKENS_TO_BUY) {
@@ -29,7 +32,9 @@ contract DTECPreSale is DTECTokenSale {
 
     function allocateTokens(uint256 _amt, bool _preferUSDC) external override nonReentrant {
         if (_amt < MIN_TOKENS_TO_BUY) {
-            revert OverUnderAllowedAmt();
+            if (addressToBoughtAmt[msg.sender] == 0 || _amt < MIN_TOKENS_TO_ADDITION_BUY) {
+                revert OverUnderAllowedAmt();
+            }
         }
         addressToBoughtAmt[msg.sender] = addressToBoughtAmt[msg.sender] + _amt;
         if (addressToBoughtAmt[msg.sender] > MAX_TOKENS_TO_BUY) {

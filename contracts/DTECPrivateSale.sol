@@ -6,6 +6,7 @@ import {DTECTokenSale} from './DTECTokenSale.sol';
 contract DTECPrivateSale is DTECTokenSale {
     uint256 public constant MIN_TOKENS_TO_BUY = 83200;
     uint256 public constant MAX_TOKENS_TO_BUY = 5000000;
+    uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 33200; 
 
     mapping(address => uint8) public wl;
     mapping(address => uint256) public addressToBoughtAmt;
@@ -36,7 +37,9 @@ contract DTECPrivateSale is DTECTokenSale {
             revert CantBuy();
         }
         if (_amt < MIN_TOKENS_TO_BUY) {
-            revert OverUnderAllowedAmt();
+            if (addressToBoughtAmt[msg.sender] == 0 || _amt < MIN_TOKENS_TO_ADDITION_BUY) {
+                revert OverUnderAllowedAmt();
+            }
         }
         addressToBoughtAmt[msg.sender] = addressToBoughtAmt[msg.sender] + _amt;
         if (addressToBoughtAmt[msg.sender] > MAX_TOKENS_TO_BUY) {
@@ -50,7 +53,9 @@ contract DTECPrivateSale is DTECTokenSale {
             revert CantBuy();
         }
         if (_amt < MIN_TOKENS_TO_BUY) {
-            revert OverUnderAllowedAmt();
+            if (addressToBoughtAmt[msg.sender] == 0 || _amt < MIN_TOKENS_TO_ADDITION_BUY) {
+                revert OverUnderAllowedAmt();
+            }
         }
         addressToBoughtAmt[msg.sender] = addressToBoughtAmt[msg.sender] + _amt;
         if (addressToBoughtAmt[msg.sender] > MAX_TOKENS_TO_BUY) {
