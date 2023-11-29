@@ -17,7 +17,7 @@ contract DTECPrivateSale is DTECTokenSale {
     error OverUnderAllowedAmt();
 
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
-        setImmediateReleaseRate(100);
+        setImmediateReleaseRate(100); // Corresponding %1 at TGE
         setSalePrice(60000); // Corresponding 0.06 USD, USDC and USDT have 6 decimals 
     }
 
