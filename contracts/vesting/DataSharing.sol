@@ -28,7 +28,9 @@ contract DataSharingVesting is ITokenLock, Ownable, ReentrancyGuard {
     constructor(address _dtecAddress) {
         require (_dtecAddress != address(0) , "Invalid address") ;
         dtecTokenAddress = _dtecAddress;
-        lockStartTime = 1704153601;
+        // TGE is 01.04.2024, first lock release for Data Sharing is 01.02.2025
+        // To get tokens on time, release lockTimestamp is 1735776001, 30 days before 01.02.2025
+        lockStartTime = 1735776001;
     }
 
     function getReleaseNumerator(uint256 _periods) internal pure returns (uint256) {

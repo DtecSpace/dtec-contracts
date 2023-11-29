@@ -5,6 +5,8 @@ import {Vesting} from "./Vesting.sol";
 
 contract Team is Vesting {
     constructor(address _dtecAddress) Vesting(_dtecAddress) {
-        setReleaseInfo(1735689601, 278);
+        // TGE is 01.04.2024, first lock release for Team Vesting is 01.04.2025
+        // To get tokens on time, release lockTimestamp is 1740873601, 30 days before 01.04.2025
+        setReleaseInfo(1740873601, 278);
     }
 }
