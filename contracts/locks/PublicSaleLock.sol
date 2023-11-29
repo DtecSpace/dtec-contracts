@@ -5,6 +5,6 @@ import {LinearLock} from "./LinearLock.sol";
 
 contract PublicSaleLock is LinearLock {
     constructor(address _dtecAddress) LinearLock(_dtecAddress) {
-        setReleaseInfo(1706745601, 3333);
+        setReleaseInfo(1706745601, 2500);
     }
 }
