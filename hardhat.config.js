@@ -18,7 +18,12 @@ module.exports = {
   },
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {},
+    hardhat: {
+      forking: {
+        url: "https://polygon-rpc.com",
+        blockNumber: 50621808
+      }
+     },
     polygon_mumbai: {
       url: "https://rpc-mumbai.maticvigil.com",
       accounts: process.env.DEPLOY_PRIVATE_KEY

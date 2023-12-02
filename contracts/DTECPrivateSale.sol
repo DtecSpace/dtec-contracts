@@ -2,16 +2,21 @@
 pragma solidity ^0.8.17;
 
 import {DTECTokenSale} from './DTECTokenSale.sol';
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract DTECPrivateSale is DTECTokenSale {
     uint256 public constant MIN_TOKENS_TO_BUY = 83200;
     uint256 public constant MAX_TOKENS_TO_BUY = 5000000;
     uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 33200; 
 
+    bool migrated = false;
+    address public immutable oldSaleContractAddress;
+
     mapping(address => uint8) public wl;
     mapping(address => uint256) public addressToBoughtAmt;
 
     event WlsAdded(address[] wls);
+    event MigrationMade (address[] migratedUsers , uint256 timestamp, uint256 migratedTokenAmount);
 
     error Unauthorized();
     error OverUnderAllowedAmt();
@@ -19,9 +24,11 @@ contract DTECPrivateSale is DTECTokenSale {
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
         setImmediateReleaseRate(100); // Corresponding %1 at TGE
         setSalePrice(60000); // Corresponding 0.06 USD, USDC and USDT have 6 decimals 
+        
+        oldSaleContractAddress = 0xa40CDB7595fb14F932F56EaA6Aa00E5062B8aa08;
     }
 
-    function addWLs(address[] calldata _wallets) external {
+    function addWLs(address[] calldata _wallets) public {
         if (!isMod(msg.sender)) {
             revert Unauthorized();
         }
@@ -62,5 +69,39 @@ contract DTECPrivateSale is DTECTokenSale {
             revert OverUnderAllowedAmt();
         }
         nonWeb3UserAllocate(msg.sender, _amt, _preferUSDC);
+    }
+
+    function migrateOldUsers (address[] calldata users ) external onlyOwner nonReentrant {
+
+        require(migrated == false , "Migration can only made once");
+
+        DTECPrivateSale oldSaleContract = DTECPrivateSale(oldSaleContractAddress) ;
+        uint256 oldSaleAmount = amountSold;
+        IERC20 dtecToken = IERC20(dtecTokenAddress);
+
+        for (uint256 i = 0; i < users.length; i++) {
+            require(oldSaleContract.addressToBoughtAmt(users[i]) > 0, "There is nothing to migrate for user.");
+        }
+        addWLs(users);
+
+        for (uint256 i = 0; i < users.length; i++) {
+            require(addressToBoughtAmt[users[i]] == 0 , "User should only migrate once, no duplicate amount");
+            uint256 oldBoughtAmtForUser = oldSaleContract.addressToBoughtAmt(users[i]);
+            uint256 amtInWei = oldBoughtAmtForUser * 1 ether;
+
+            addressToBoughtAmt[users[i]] += oldBoughtAmtForUser;
+            allocations[users[i]] += amtInWei;
+            totalAllocated += amtInWei;
+            amountSold += oldBoughtAmtForUser;
+        }
+
+        uint256 balance = dtecToken.balanceOf(address(this));
+        require(totalAllocated <= balance , "There isn't enough token for allocation.");
+
+        uint256 totalMigratedTokenAmount = amountSold - oldSaleAmount;
+        migrated = true; 
+
+        require(oldSaleContract.amountSold() == totalMigratedTokenAmount , "All bought amounts should be migrated");
+        emit MigrationMade(users, block.timestamp, totalMigratedTokenAmount);
     }
 }
