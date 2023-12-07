@@ -77,6 +77,8 @@ contract DTECPrivateSale is DTECTokenSale {
 
         DTECPrivateSale oldSaleContract = DTECPrivateSale(oldSaleContractAddress) ;
         uint256 oldSaleAmount = amountSold;
+        require(oldSaleAmount == 0 , "Migration should be done before any sale");
+        
         IERC20 dtecToken = IERC20(dtecTokenAddress);
 
         for (uint256 i = 0; i < users.length; i++) {
