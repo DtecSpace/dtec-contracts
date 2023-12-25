@@ -8,13 +8,16 @@
     "test": "hardhat test"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
     "@nomiclabs/hardhat-ethers": "^2.2.2",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
     "@openzeppelin/contracts": "^4.8.1",
     "hardhat": "^2.12.6",
     "hardhat-deploy": "^0.11.22",
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "hardhat-gas-reporter": "^1.0.9"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
   }
 }

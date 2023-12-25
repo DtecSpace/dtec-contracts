@@ -1,11 +1,13 @@
 require("hardhat-gas-reporter");
 require("@nomicfoundation/hardhat-toolbox");
+require('dotenv').config();
+
 const fs = require('fs');
 const path = require('path');
 
-fs.readdirSync('scripts').forEach(fileName => {
-  require(path.join(__dirname, 'scripts', fileName));
-});
+//fs.readdirSync('scripts').forEach(fileName => {
+//  require(path.join(__dirname, 'scripts', fileName));
+//});
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -21,7 +23,7 @@ module.exports = {
     hardhat: {
       forking: {
         url: "https://polygon-rpc.com",
-        blockNumber: 50621808
+        //blockNumber: 50621808
       }
      },
     polygon_mumbai: {
@@ -49,9 +51,19 @@ module.exports = {
   etherscan: {
     apiKey: {
       // See https://hardhat.org/plugins/nomiclabs-hardhat-etherscan.html#multiple-api-keys-and-alternative-block-explorers
-      polygon: process.env.SNOWTRACE_API_KEY,
-      // polygon_mumbai: process.env.SNOWTRACE_API_KEY,
+      polygon: process.env.POLYSCAN_API_KEY,
+      polygon_mumbai: process.env.POLYSCAN_API_KEY,
     },
+    customChains : [
+      {
+        network: "polygon_mumbai",
+        chainId: 80001,
+        urls: {
+          apiUrl: "https://api-testnet.polygonscan.com/api",
+          browserURL: "https://mumbai.polygonscan.com"
+        },
+      },
+    ],
   },
   gasReporter: {
     enabled: true,
