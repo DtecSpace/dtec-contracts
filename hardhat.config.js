@@ -23,7 +23,7 @@ module.exports = {
     hardhat: {
       forking: {
         url: "https://polygon-rpc.com",
-        //blockNumber: 50621808
+        blockNumber: 53043340
       }
      },
     polygon_mumbai: {
@@ -35,13 +35,13 @@ module.exports = {
       saveDeployments: true,
     },
     polygon: {
-      url: "https://polygon-rpc.com",
+      url: "https://polygon-mainnet.infura.io/v3/c5e9c17a297d482fb6e3f8f39da0d080",
       accounts: process.env.DEPLOY_PRIVATE_KEY
         ? [process.env.DEPLOY_PRIVATE_KEY]
         : [],
       chainId: 137,
       saveDeployments: true,
-      gasPrice: 120000000000,
+      gasPrice: 150000000000,
     },
   },
   namedAccounts: {
