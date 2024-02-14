@@ -90,9 +90,9 @@ contract EarlyAirdrop is ITokenLock, Ownable, ReentrancyGuard {
     constructor(address _dtecAddress) {
         require (_dtecAddress != address(0) , "Invalid address") ;
         dtecTokenAddress = _dtecAddress;
-        // TGE is 01.04.2024, first lock release for Early Airdrop is 01.02.2025
-        // To get tokens on time, release lockTimestamp is 1735776001, 30 days before 01.02.2025
-        lockStartTime = 1735776001;
+        // TGE is 29.04.2024, first lock release for Early Airdrop is 29.10.2024
+        // To get tokens on time, release lockTimestamp is 1727568000, 30 days before 29.10.2024
+        lockStartTime = 1727568000;
 
         // In TGE %15 of the tokens will be released
         tgeReleaseRate = 1500;
@@ -105,6 +105,7 @@ contract EarlyAirdrop is ITokenLock, Ownable, ReentrancyGuard {
     /// @param _user Address of the user whose tokens are to be locked
     /// @param _amt Amount of tokens to lock for vesting
     function _lock (address _user, uint256 _amt) internal {
+        require (_user != address(0) , "Invalid address") ;
         LockInfo storage info = userToLockInfo[_user];
         if (info.totalAmount == 0 ) {
             airdropUsers.push(_user);
