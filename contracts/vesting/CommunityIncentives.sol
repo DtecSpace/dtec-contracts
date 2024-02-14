@@ -44,10 +44,10 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-/// @title DataSharingVesting
+/// @title CommunityIncentives
 /// @dev Implements a token vesting mechanism specific to data sharing purposes, with a unique release schedule.
 /// @notice This contract manages the vesting of tokens for data sharing participants, releasing them based on a predetermined schedule.
-contract DataSharingVesting is ITokenLock, Ownable, ReentrancyGuard {
+contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
     /// @notice Stores vesting information for each participant
     mapping(address => LockInfo) public userToLockInfo;
 
@@ -76,7 +76,7 @@ contract DataSharingVesting is ITokenLock, Ownable, ReentrancyGuard {
         uint256 totalClaimed;
     }
 
-    /// @notice Constructor to initialize the DataSharingVesting contract
+    /// @notice Constructor to initialize the CommunityIncentives contract
     /// @param _dtecAddress Address of the DTEC token contract
     constructor(address _dtecAddress) {
         require (_dtecAddress != address(0) , "Invalid address") ;
