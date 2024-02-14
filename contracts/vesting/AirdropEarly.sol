@@ -54,6 +54,9 @@ contract EarlyAirdrop is ITokenLock, Ownable, ReentrancyGuard {
     ///@notice Stores airdrop users in an array
     address[] public airdropUsers ; 
 
+    ///@notice The total locked amount of DTEC Token
+    uint256 public totalLocked ; 
+
     /// @notice Address of the DTEC token
     address public immutable dtecTokenAddress;
 
@@ -111,6 +114,7 @@ contract EarlyAirdrop is ITokenLock, Ownable, ReentrancyGuard {
             airdropUsers.push(_user);
         } 
         info.totalAmount += _amt;
+        totalLocked += _amt;
         emit TokensLocked(_user, block.timestamp, _amt);
     }
 
@@ -180,5 +184,9 @@ contract EarlyAirdrop is ITokenLock, Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < _adresses.length; i++) {
             _claim(_adresses[i]);
         }
+    }
+
+    function getAirdropUsers() external view returns (address[] memory){
+        return airdropUsers;
     }
 }
