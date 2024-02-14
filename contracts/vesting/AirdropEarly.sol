@@ -97,7 +97,7 @@ contract EarlyAirdrop is ITokenLock, Ownable, ReentrancyGuard {
         // To get tokens on time, release lockTimestamp is 1727568000, 30 days before 29.10.2024
         lockStartTime = 1727568000;
 
-        // In TGE %15 of the tokens will be released
+        // In/Before TGE %15 of the tokens will be released
         tgeReleaseRate = 1500;
 
         // Early airdrop vestings will be completed in 4 months, release rate is based 10,000.    
@@ -186,7 +186,20 @@ contract EarlyAirdrop is ITokenLock, Ownable, ReentrancyGuard {
         }
     }
 
-    function getAirdropUsers() external view returns (address[] memory){
-        return airdropUsers;
+    function getAirdropUsers(uint256 _paginationStart, uint256 _paginationEnd ) external view returns (address[] memory, uint256){
+        require(airdropUsers.length > 0 , "Nothing to return");
+        require(_paginationStart < _paginationEnd, "Should give a range");
+        if (_paginationEnd > airdropUsers.length) {
+            _paginationEnd = airdropUsers.length;
+        }
+
+        address[] memory _airdropUsers = new address[](_paginationEnd - _paginationStart);
+        uint256 i;
+        for (_paginationStart; _paginationStart < _paginationEnd ; _paginationStart++) 
+        {
+            _airdropUsers[i] = airdropUsers[_paginationStart];
+            i += 1;
+        }
+        return (_airdropUsers , _paginationEnd);
     }
 }
