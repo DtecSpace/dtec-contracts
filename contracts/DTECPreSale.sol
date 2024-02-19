@@ -55,15 +55,15 @@ contract DTECPreSale is DTECTokenSale {
     uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 4000; 
 
     /// @dev Mapping to track the amount of tokens bought by each address
-    mapping(address => uint256) addressToBoughtAmt;
+    mapping(address => uint256) public addressToBoughtAmt;
 
     // Error declaration
     error OverUnderAllowedAmt();
 
     /// @notice Constructor to initialize the presale contract
-    /// @param _receiver Address where sale proceeds will be sent
+    /// @param _receiver Address where sale funds will be sent
     /// @param _dtecAddress Address of the DTEC token
-    /// @param _lockerAddress Address of the lock contract
+    /// @param _lockerAddress Address of the locker contract
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
         setImmediateReleaseRate(300); // Corresponding %3 at TGE
         setSalePrice(75000); // Corresponding 0.075 USD, USDC and USDT have 6 decimals 

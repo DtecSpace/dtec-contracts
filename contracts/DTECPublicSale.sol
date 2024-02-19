@@ -52,7 +52,7 @@ contract DTECPublicSale is DTECTokenSale {
     uint256 public constant MAX_TOKENS_TO_BUY = 100000;
 
     /// @dev Mapping to track the amount of tokens bought by each address
-    mapping(address => uint256) addressToBoughtAmt;
+    mapping(address => uint256) public addressToBoughtAmt;
 
     // Error declaration
     error OverUnderAllowedAmt();
