@@ -49,7 +49,7 @@ contract DTECPrivateSale2 is DTECTokenSale {
     uint256 public constant MIN_TOKENS_TO_BUY = 6650;
 
     /// @notice Maximum amount of tokens a user can buy in total
-    uint256 public constant MAX_TOKENS_TO_BUY = 4000000;
+    uint256 public constant MAX_TOKENS_TO_BUY = 2666666;
 
     /// @notice Minimum tokens to buy for additional purchases (after the first buy)
     uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 4000; 
