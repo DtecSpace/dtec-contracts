@@ -49,7 +49,7 @@ contract PreSaleLock is LinearLock {
     /// @param _dtecAddress Address of the DTEC token to be locked
     constructor(address _dtecAddress) LinearLock(_dtecAddress) {
         // TGE is 29.04.2024, first lock release for Private Sale 2 is 29.09.2024
-        // To get tokens on time, release lockTimestamp is 1725148801, 30 days before 29.09.2024
+        // To get tokens on time, release lockTimestamp is 1724976000, 30 days before 29.09.2024
         setReleaseInfo(1724976000, 834);
     }
 }
