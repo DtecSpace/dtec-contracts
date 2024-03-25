@@ -55,7 +55,7 @@ contract DTECPrivateSale2 is DTECTokenSale {
     uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 4000; 
 
     /// @dev Mapping to track the amount of tokens bought by each address
-    mapping(address => uint256) addressToBoughtAmt;
+    mapping(address => uint256) public addressToBoughtAmt;
 
     // Error declaration
     error OverUnderAllowedAmt();
