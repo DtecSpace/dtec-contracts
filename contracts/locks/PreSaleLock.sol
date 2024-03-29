@@ -41,11 +41,11 @@ pragma solidity ^0.8.17;
 
 import {LinearLock} from "./LinearLock.sol";
 
-/// @title PrivateSale2Lock
+/// @title PreSaleLock
 /// @dev Extends LinearLock with specific settings for a presale lock.
 /// @notice Locks tokens for the presale phase and releases them linearly starting from a specific date.
-contract PrivateSale2Lock is LinearLock {
-    /// @notice Constructor for PrivateSale2Lock, initializing the lock with specific release timing and rate
+contract PreSaleLock is LinearLock {
+    /// @notice Constructor for PreSaleLock, initializing the lock with specific release timing and rate
     /// @param _dtecAddress Address of the DTEC token to be locked
     constructor(address _dtecAddress) LinearLock(_dtecAddress) {
         // TGE is 29.04.2024, first lock release for Private Sale 2 is 29.09.2024

@@ -41,10 +41,10 @@ pragma solidity ^0.8.17;
 
 import {DTECTokenSale} from './DTECTokenSale.sol';
 
-/// @title DTECPrivateSale2
+/// @title DTECPreSale
 /// @dev Extends DTECTokenSale for the presale phase with specific minimum, maximum, and additional purchase limits.
 /// @notice This contract allows for presale of tokens with specific purchase requirements and limits.
-contract DTECPrivateSale2 is DTECTokenSale {
+contract DTECPreSale is DTECTokenSale {
     /// @notice Minimum amount of tokens a user can buy in first buy
     uint256 public constant MIN_TOKENS_TO_BUY = 6650;
 
