@@ -46,13 +46,13 @@ import {DTECTokenSale} from './DTECTokenSale.sol';
 /// @notice This contract allows for presale of tokens with specific purchase requirements and limits.
 contract DTECPreSale is DTECTokenSale {
     /// @notice Minimum amount of tokens a user can buy in first buy
-    uint256 public constant MIN_TOKENS_TO_BUY = 13000;
+    uint256 public constant MIN_TOKENS_TO_BUY = 6650;
 
     /// @notice Maximum amount of tokens a user can buy in total
-    uint256 public constant MAX_TOKENS_TO_BUY = 5263000;
+    uint256 public constant MAX_TOKENS_TO_BUY = 4000000;
 
     /// @notice Minimum tokens to buy for additional purchases (after the first buy)
-    uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 7800; 
+    uint256 public constant MIN_TOKENS_TO_ADDITION_BUY = 4000; 
 
     /// @dev Mapping to track the amount of tokens bought by each address
     mapping(address => uint256) public addressToBoughtAmt;
@@ -66,7 +66,7 @@ contract DTECPreSale is DTECTokenSale {
     /// @param _lockerAddress Address of the locker contract
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
         setImmediateReleaseRate(300); // Corresponding %3 at TGE
-        setSalePrice(38000); // Corresponding 0.038 USD, USDC and USDT have 6 decimals 
+        setSalePrice(75000); // Corresponding 0.075 USD, USDC and USDT have 6 decimals 
     }
 
     /// @notice Allows a user to buy tokens with specific minimum and maximum limits
