@@ -65,7 +65,7 @@ contract DTECPreSale is DTECTokenSale {
     /// @param _dtecAddress Address of the DTEC token
     /// @param _lockerAddress Address of the locker contract
     constructor(address _receiver, address _dtecAddress, address _lockerAddress) DTECTokenSale(_receiver, _dtecAddress, _lockerAddress) {
-        setImmediateReleaseRate(300); // Corresponding %3 at TGE
+        setImmediateReleaseRate(400); // Corresponding %4 at TGE
         setSalePrice(38000); // Corresponding 0.038 USD, USDC and USDT have 6 decimals 
     }
 
