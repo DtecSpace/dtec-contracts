@@ -92,8 +92,8 @@ contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
     /// @return The numerator representing the fraction of the total amount that should be released
     function getReleaseNumerator(uint256 _periods) internal pure returns (uint256) {
         uint256 _numerator = 0;
-        // DataSharing vesting is first year %14.25 , second year %13.75, third year %13.25 etc..
-        _numerator = _periods * 1425 - (50 * _periods * (_periods - 1) / 2);
+        // DataSharing vesting is first year %25.55 , second year %22.77, third year %20 etc..
+        _numerator = _periods * 2556 - (277 * _periods * (_periods - 1) / 2);
         if (_numerator > 10000) {
             _numerator = 10000;
         }
