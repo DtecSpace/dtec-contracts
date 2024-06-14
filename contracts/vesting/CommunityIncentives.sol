@@ -58,7 +58,7 @@ contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
     uint256 public immutable lockStartTime;
 
     /// @notice The period for each vesting phase
-    uint256 public constant period = 365 days;
+    uint256 public constant period = 90 days;
 
     // Event declarations
     event Claimed(address indexed user, uint256 timestamp, uint256 claimedAmount, 
@@ -82,8 +82,8 @@ contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
         require (_dtecAddress != address(0) , "Invalid address") ;
         dtecTokenAddress = _dtecAddress;
         // TGE is 29.04.2024, first lock release for Data Sharing is 01.01.2025
-        // To get tokens on time, release lockTimestamp is 1704153601, 365 days before 01.01.2025
-        lockStartTime = 1704153601;
+        // To get tokens on time, release lockTimestamp is 1727913600, 90 days before 01.01.2025
+        lockStartTime = 1727913600;
     }
 
     /// @notice Calculates the release numerator based on the number of periods passed
@@ -92,8 +92,8 @@ contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
     /// @return The numerator representing the fraction of the total amount that should be released
     function getReleaseNumerator(uint256 _periods) internal pure returns (uint256) {
         uint256 _numerator = 0;
-        // DataSharing vesting is first year %25.55 , second year %22.77, third year %20 etc..
-        _numerator = _periods * 2556 - (277 * _periods * (_periods - 1) / 2);
+        // DataSharing vesting is first 90 days %6.9 , second 90 days %6.7, third 90 days %6.5 etc..
+        _numerator = _periods * 690 - (20 * _periods * (_periods - 1) / 2);
         if (_numerator > 10000) {
             _numerator = 10000;
         }
