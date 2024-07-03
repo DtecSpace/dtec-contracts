@@ -81,7 +81,7 @@ contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
     constructor(address _dtecAddress) {
         require (_dtecAddress != address(0) , "Invalid address") ;
         dtecTokenAddress = _dtecAddress;
-        // TGE is 29.04.2024, first lock release for Data Sharing is 01.01.2025
+        // TGE is 14.07.2024, first lock release for Data Sharing is 01.01.2025
         // To get tokens on time, release lockTimestamp is 1727913600, 90 days before 01.01.2025
         lockStartTime = 1727913600;
     }

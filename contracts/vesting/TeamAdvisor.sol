@@ -48,8 +48,8 @@ contract TeamAdvisor is Vesting {
     /// @notice Constructor for Team&Advisor Vesting, initializing the vesting with specific timing and rate for the Team&Advisor's tokens
     /// @param _dtecAddress Address of the DTEC token to be vested for the Team&Advisor
     constructor(address _dtecAddress) Vesting(_dtecAddress) {
-        // TGE is 01.04.2024, first lock release for Team&Advisor Vesting is 01.04.2025
-        // To get tokens on time, release lockTimestamp is 1740873601, 30 days before 01.04.2025
-        setReleaseInfo(1740873601, 278);
+        // TGE is 14.07.2024, first lock release for Team&Advisor Vesting is 14.07.2025
+        // To get tokens on time, release lockTimestamp is 1749859200, 30 days before 14.07.2025
+        setReleaseInfo(1749859200, 278);
     }
 }
