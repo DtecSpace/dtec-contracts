@@ -47,14 +47,13 @@ import {TgeVestingBase} from "./TgeVesting.sol";
 contract StrategicSale is TgeVestingBase {
     /// @notice Constructor for StrategicSale TgeVesting, initializing the vesting with specific timing and rate for the StrategicSale's tokens
     /// @param _dtecAddress Address of the DTEC token to be vested for the StrategicSale
-    constructor(address _dtecAddress, uint256 _lockStartTime, uint256 _tgeReleaseRate, 
-    uint256 _releaseRate, uint256 _vestingAmount) 
+    constructor(address _dtecAddress) 
     
     TgeVestingBase(
         _dtecAddress,
-        _lockStartTime,
-        _tgeReleaseRate,
-        _releaseRate,
-        _vestingAmount
+        1723680000, // 14.09.2024 first token release
+        700, // %7 TGE for StrategicSale
+        775, // // 12 Vesting months for StrategicSale
+        6750000 // 6.75M tokens will be locked
     ) {}
 }

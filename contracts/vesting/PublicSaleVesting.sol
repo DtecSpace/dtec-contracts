@@ -41,19 +41,19 @@ pragma solidity ^0.8.17;
 
 import {TgeVestingBase} from "./TgeVesting.sol";
 
-/// @title KolRound
-/// @dev Extends the TgeVestingBase contract with specific settings for KolRound vesting.
-/// @notice Manages the vesting of tokens specifically allocated to the KolRound, with a distinct vesting schedule.
-contract KolRound is TgeVestingBase {
-    /// @notice Constructor for KolRound TgeVesting, initializing the vesting with specific timing and rate for the KolRound's tokens
-    /// @param _dtecAddress Address of the DTEC token to be vested for the KolRound
-    constructor(address _dtecAddress) 
+/// @title PublicSale
+/// @dev Extends the TgeVestingBase contract with specific settings for PublicSale vesting.
+/// @notice Manages the vesting of tokens specifically allocated to the PublicSale, with a distinct vesting schedule.
+contract PublicSale is TgeVestingBase {
+    /// @notice Constructor for PublicSale TgeVesting, initializing the vesting with specific timing and rate for the PublicSale's tokens
+    /// @param _dtecAddress Address of the DTEC token to be vested for the PublicSale
+    constructor(address _dtecAddress, uint256 _vestingAmount) 
     
     TgeVestingBase(
         _dtecAddress,
         1721001600, // 14.08.2024 first token release
-        1000, // %10 TGE for KolSale
-        900, // // 10 Vesting months for KolSale
-        4500000 // 4.5M tokens will be locked
+        2000, // %20 TGE for PublicSale
+        1000, // // 8 Vesting months for PublicSale
+        _vestingAmount
     ) {}
 }
