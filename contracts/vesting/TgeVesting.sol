@@ -59,6 +59,8 @@ contract TgeVestingBase is ITokenLock, Ownable, ReentrancyGuard {
     /// @param _vestingAmount Maximum reachable vesting token amount. In wei format.
     constructor(address _dtecAddress, uint256 _lockStartTime, uint256 _tgeReleaseRate, uint256 _releaseRate, uint256 _vestingAmount ) {
         require (_dtecAddress != address(0) , "Invalid address") ;
+        require (_lockStartTime != 0 , "Lock start can't be equal to zero") ;
+        
 
         dtecTokenAddress = _dtecAddress;
         lockStartTime = _lockStartTime ;
@@ -107,7 +109,7 @@ contract TgeVestingBase is ITokenLock, Ownable, ReentrancyGuard {
     /// @return Amount of tokens that the user can claim
     function getClaimable(address _user) public view returns (uint256) {
         LockInfo memory info = userToLockInfo[_user];
-        if (info.totalClaimed == info.totalAmount || lockStartTime == 0 ) {
+        if (info.totalClaimed == info.totalAmount ) {
             return 0;
         }
         uint256 totalClaimableSoFar;

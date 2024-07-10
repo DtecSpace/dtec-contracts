@@ -114,7 +114,7 @@ contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
     /// @return Amount of tokens that the user can claim
     function getClaimable(address _user) public view returns (uint256) {
         LockInfo memory info = userToLockInfo[_user];
-        if (info.totalClaimed == info.totalAmount || lockStartTime == 0 || block.timestamp < lockStartTime) {
+        if (info.totalClaimed == info.totalAmount || block.timestamp < lockStartTime) {
             return 0;
         }
         uint256 timePassed = block.timestamp - lockStartTime;
