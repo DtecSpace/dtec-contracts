@@ -58,6 +58,11 @@ contract PrivateSaleLock2 is Ownable, Pausable, ReentrancyGuard {
     uint256 public totalLockedSoFar;
     uint256 public immutable tgeReleaseRate;
 
+    struct LockInfo {
+        uint256 totalAmount;
+        uint256 totalClaimed;
+    }
+
     event Claimed(address indexed user, uint256 timestamp, uint256 claimedAmount, 
     uint256 totalUnlocked);
     event TokensReleased(address indexed user, uint256 timestamp, uint256 releasedAmount, 
@@ -110,8 +115,6 @@ contract PrivateSaleLock2 is Ownable, Pausable, ReentrancyGuard {
         emit Claimed(msg.sender, block.timestamp, claimAmount, totalUnlocked);
     }
 
-
-
     function pullTokens(uint256 _amt) external onlyOwner {
 
         require(_amt != 0 , "Wrong amount.");
@@ -131,6 +134,30 @@ contract PrivateSaleLock2 is Ownable, Pausable, ReentrancyGuard {
             _pause();
         }
         emit PausedToggled(paused());
+    }
+
+    function getClaimable(address _user) external view returns (uint256){
+
+        uint256 claimable = privSale1Lock.getClaimable(_user);
+        (, uint256 privSale1UserClaimedSoFar) = privSale1Lock.userToLockInfo(_user);
+
+        uint256 totalUnlocked = claimable + privSale1UserClaimedSoFar;
+
+        return  totalUnlocked > userTotalClaimedSoFar[_user] ? 
+                totalUnlocked - userTotalClaimedSoFar[_user] : 
+                0  ;
+    }
+
+    function userToLockInfo(address _user) external view returns (LockInfo memory) {
+        (uint256 totalAmount, ) = privSale1Lock.userToLockInfo(_user);
+        uint256 totalClaimed = userTotalClaimedSoFar[_user];
+        
+        LockInfo memory lockInfo = LockInfo({
+            totalAmount: totalAmount,
+            totalClaimed: totalClaimed
+        });
+
+        return lockInfo;
     }
 
 
