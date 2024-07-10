@@ -56,6 +56,7 @@ contract PrivateSaleLock2 is Ownable, Pausable, ReentrancyGuard {
     mapping(address => uint256) public userTotalClaimedSoFar;
 
     uint256 public totalLockedSoFar;
+    uint256 public immutable tgeReleaseRate;
 
     event Claimed(address indexed user, uint256 timestamp, uint256 claimedAmount, 
     uint256 totalUnlocked);
@@ -64,7 +65,9 @@ contract PrivateSaleLock2 is Ownable, Pausable, ReentrancyGuard {
     event TokensPulled(uint256 amount);
     event PausedToggled(bool isPaused);
 
-    constructor() {}
+    constructor() {
+        tgeReleaseRate = privSale1.immediateReleaseRate();
+    }
 
     function releaseFunds(address _to) external nonReentrant whenNotPaused {
 
@@ -77,7 +80,7 @@ contract PrivateSaleLock2 is Ownable, Pausable, ReentrancyGuard {
         uint256 bougthAmountDifference =  privSale1BoughtAmtInWei - addressToBoughtAmtInWei[msg.sender] ;
         addressToBoughtAmtInWei[msg.sender] = privSale1BoughtAmtInWei;
 
-        uint256 releaseAmount = bougthAmountDifference * privSale1.immediateReleaseRate() / 10000 ; // 10,000 is the base rate from old contract
+        uint256 releaseAmount = bougthAmountDifference * tgeReleaseRate / 10000 ; // 10,000 is the base rate from old contract
 
         totalLockedSoFar += bougthAmountDifference - releaseAmount;
 
