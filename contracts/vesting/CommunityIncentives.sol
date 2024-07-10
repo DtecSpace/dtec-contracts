@@ -66,9 +66,7 @@ contract CommunityIncentives is ITokenLock, Ownable, ReentrancyGuard {
     event TokensLocked(address indexed user, uint256 timestamp, uint256 amount);
 
     // Error declarations
-    error Unauthorized();
     error NothingToClaim();
-    error OutOfExpectedRange();
 
     /// @dev Struct to store total amount locked and total amount claimed for each user
     struct LockInfo {
