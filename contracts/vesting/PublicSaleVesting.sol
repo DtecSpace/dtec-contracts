@@ -51,7 +51,7 @@ contract PublicSaleVesting is TgeVestingBase {
     
     TgeVestingBase(
         _dtecAddress,
-        1721001600, // 14.08.2024 first token release
+        1722556800, // 01.09.2024 first token release
         2000, // %20 TGE for PublicSaleVesting
         1000, // // 8 Vesting months for PublicSaleVesting
         _vestingAmount

@@ -48,8 +48,8 @@ contract Partners is Vesting {
     /// @notice Constructor for Partners Vesting, initializing the vesting with specific timing and rate for the Partner's tokens
     /// @param _dtecAddress Address of the DTEC token to be vested for the Partners
     constructor(address _dtecAddress) Vesting(_dtecAddress) {
-        // TGE is 14.07.2024, first lock release for Partners Vesting is 01.02.2024
-        // To get tokens on time, release lockTimestamp is 1735776001, 30 days before 14.07.2024
-        setReleaseInfo(1735776001, 278);
+        // TGE is 01.08.2024, first lock release for Partners Vesting is 01.06.2025
+        // To get tokens on time, release lockTimestamp is 1735776001, 30 days before 01.06.2025
+        setReleaseInfo(1746144000, 278);
     }
 }

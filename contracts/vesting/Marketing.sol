@@ -48,8 +48,8 @@ contract Marketing is Vesting {
     /// @notice Constructor for Marketing Vesting, initializing the vesting with specific timing and rate for the Marketing's tokens
     /// @param _dtecAddress Address of the DTEC token to be vested for the Marketing
     constructor(address _dtecAddress) Vesting(_dtecAddress) {
-        // TGE is 14.07.2024, first lock release for Marketing Vesting is 14.12.2024
-        // To get tokens on time, release lockTimestamp is 1731542400, 30 days before 14.12.2024
-        setReleaseInfo(1731542400, 209);
+        // TGE is 01.08.2024, first lock release for Marketing Vesting is 01.01.2025
+        // To get tokens on time, release lockTimestamp is 1733097600, 30 days before 01.01.2025
+        setReleaseInfo(1733097600, 209);
     }
 }
