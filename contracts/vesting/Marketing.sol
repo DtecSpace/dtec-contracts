@@ -50,6 +50,6 @@ contract Marketing is Vesting {
     constructor(address _dtecAddress) Vesting(_dtecAddress) {
         // TGE is 01.08.2024, first lock release for Marketing Vesting is 01.01.2025
         // To get tokens on time, release lockTimestamp is 1733097600, 30 days before 01.01.2025
-        setReleaseInfo(1733097600, 167);
+        setReleaseInfo(1733097600, 209);
     }
 }
