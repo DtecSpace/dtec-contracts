@@ -51,7 +51,7 @@ contract BitciPrivateSale is TgeVestingBase {
     
     TgeVestingBase(
         _dtecAddress,
-        1726531200, // 17.10.2024 first token release
+        1726570800, // 17.10.2024 first token release
         400, // %4 TGE for PrivateSale
         960, // // 10 Vesting months for PrivateSale
         _vestingAmount
