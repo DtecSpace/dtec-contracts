@@ -54,6 +54,6 @@ contract StrategicSale is TgeVestingBase {
         1725188400, // 01.10.2024 first token release
         700, // %7 TGE for StrategicSale
         775, // // 12 Vesting months for StrategicSale
-        6750000 // 6.75M tokens will be locked
+        6750000 // 6.75M tokens maximum will be locked
     ) {}
 }

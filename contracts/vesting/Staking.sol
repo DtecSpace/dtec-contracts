@@ -49,7 +49,7 @@ contract Staking is Vesting {
     /// @param _dtecAddress Address of the DTEC token to be vested for the Staking
     constructor(address _dtecAddress) Vesting(_dtecAddress) {
         // TGE is 01.08.2024, first lock release for Staking Vesting is 01.09.2024
-        // To get tokens on time, release lockTimestamp is 1721001600, 30 days before 01.09.2024
+        // To get tokens on time, release lockTimestamp is 1722556800, 30 days before 01.09.2024
         setReleaseInfo(1722556800, 167);
     }
 }

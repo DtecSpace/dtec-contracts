@@ -53,7 +53,7 @@ contract KolRound is TgeVestingBase {
         _dtecAddress,
         1722596400, // 01.09.2024 first token release
         1000, // %10 TGE for KolSale
-        900, // // 10 Vesting months for KolSale
-        4500000 // 4.5M tokens will be locked
+        900, // 10 Vesting months for KolSale
+        4500000 // 4.5M tokens maximum will be locked
     ) {}
 }
