@@ -20,6 +20,15 @@ abstract contract StakingBase {
         bool withdrawn;
     }
 
+    struct StakeDetail {
+        uint256 index;
+        uint256 amount;
+        uint256 startTime;
+        uint256 endTime;
+        bool withdrawn;
+        uint256 currentReward;
+    }
+
     mapping(address => Stake[]) public stakes;
 
     event Staked(address indexed user, uint256 index, uint256 amount, uint256 startTime);
@@ -85,20 +94,36 @@ abstract contract StakingBase {
     function getStakeDetails(address _user, uint256 _index)
         external
         view
-        returns (
-            uint256 amount,
-            uint256 startTime,
-            uint256 endTime,
-            bool withdrawn,
-            uint256 currentReward
-        )
+        returns (StakeDetail memory)
     {
         Stake storage userStake = stakes[_user][_index];
+        return _getStakeDetail(_index, userStake);
+    }
 
-        amount = userStake.amount;
-        startTime = userStake.startTime;
-        endTime = startTime + duration;
-        withdrawn = userStake.withdrawn;
+    function getAllStakeDetails(address _user)
+        external
+        view
+        returns (StakeDetail[] memory)
+    {
+        Stake[] storage userStakes = stakes[_user];
+        uint256 stakeCount = userStakes.length;
+        StakeDetail[] memory details = new StakeDetail[](stakeCount);
+
+        for (uint256 i = 0; i < stakeCount; i++) {
+            details[i] = _getStakeDetail(i, userStakes[i]);
+        }
+
+        return details;
+    }
+
+    function _getStakeDetail(
+        uint256 _index,
+        Stake storage userStake
+    ) internal view returns (StakeDetail memory) {
+        uint256 amount = userStake.amount;
+        uint256 startTime = userStake.startTime;
+        uint256 endTime = startTime + duration;
+        bool withdrawn = userStake.withdrawn;
 
         uint256 elapsedTime;
         if (block.timestamp >= endTime) {
@@ -107,7 +132,16 @@ abstract contract StakingBase {
             elapsedTime = block.timestamp - startTime;
         }
 
-        currentReward = calculateReward(userStake.amount, elapsedTime);
+        uint256 currentReward = calculateReward(amount, elapsedTime);
+
+        return StakeDetail({
+            index: _index,
+            amount: amount,
+            startTime: startTime,
+            endTime: endTime,
+            withdrawn: withdrawn,
+            currentReward: currentReward
+        });
     }
 
     function calculateReward(uint256 _amount, uint256 _time)
