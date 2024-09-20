@@ -87,8 +87,8 @@ abstract contract StakingBase {
         emit Withdrawn(msg.sender, _index, userStake.amount, reward);
     }
 
-    function getStakes(address _user) external view returns (Stake[] memory) {
-        return stakes[_user];
+    function getStakeCount(address _user) external view returns (uint256) {
+        return stakes[_user].length;
     }
 
     function getStakeDetails(address _user, uint256 _index)
@@ -96,21 +96,38 @@ abstract contract StakingBase {
         view
         returns (StakeDetail memory)
     {
+        require(_index < stakes[_user].length, "Invalid stake index");
         Stake storage userStake = stakes[_user][_index];
         return _getStakeDetail(_index, userStake);
     }
 
-    function getAllStakeDetails(address _user)
+    function getAllStakeDetails(
+        address _user,
+        uint256 _start,
+        uint256 _count
+    )
         external
         view
         returns (StakeDetail[] memory)
     {
         Stake[] storage userStakes = stakes[_user];
-        uint256 stakeCount = userStakes.length;
+        uint256 totalStakes = userStakes.length;
+
+        if (_start >= totalStakes) {
+            return new StakeDetail[](0); // Return empty array if start index is beyond the array size
+        }
+
+        uint256 end = _start + _count;
+        if (end > totalStakes) {
+            end = totalStakes;
+        }
+
+        uint256 stakeCount = end - _start;
         StakeDetail[] memory details = new StakeDetail[](stakeCount);
 
         for (uint256 i = 0; i < stakeCount; i++) {
-            details[i] = _getStakeDetail(i, userStakes[i]);
+            uint256 index = _start + i;
+            details[i] = _getStakeDetail(index, userStakes[index]);
         }
 
         return details;
