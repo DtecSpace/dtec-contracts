@@ -2,14 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-abstract contract StakingBase {
+abstract contract StakingBase is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    IERC20 public stakingToken;
-    IERC20 public rewardToken;
-    uint64 public annualYield; 
-    uint64 public duration;    
+    IERC20 public immutable stakingToken;
+    IERC20 public immutable rewardToken;
+    uint64 public immutable annualYield; 
+    uint64 public immutable duration;    
+
+    uint256 public immutable maxTotalStake; 
+    uint256 public totalStaked;  
 
     uint256 private constant NUMERATOR = 1_000_000; 
     uint256 private constant DENOMINATOR = NUMERATOR * 10000 * 365 days; 
@@ -38,24 +42,31 @@ abstract contract StakingBase {
         IERC20 _stakingToken,
         IERC20 _rewardToken,
         uint64 _annualYield,
-        uint64 _duration
+        uint64 _duration,
+        uint256 _maxTotalStake
     ) {
+        require(address(_stakingToken) != address(0), "Invalid staking token address");
+        require(address(_rewardToken) != address(0), "Invalid reward token address");
+        require(_annualYield > 0, "Annual yield must be greater than 0");
+        require(_duration > 0, "Duration must be greater than 0");
+        require(_maxTotalStake > 0, "Max total stake must be greater than 0");
+
         stakingToken = _stakingToken;
         rewardToken = _rewardToken;
         annualYield = _annualYield;
         duration = _duration;
+        maxTotalStake = _maxTotalStake;
     }
 
-    function stake(uint256 _amount) external virtual {
+    function stake(uint256 _amount) external virtual nonReentrant {
         require(_amount > 0, "Cannot stake zero tokens");
+        require(totalStaked + _amount <= maxTotalStake, "Staking pool limit reached");
 
-        // Transfer staking tokens to the contract
         stakingToken.safeTransferFrom(msg.sender, address(this), _amount);
 
         uint128 amount = uint128(_amount);
         uint128 startTime = uint128(block.timestamp);
 
-        // Create a new stake
         stakes[msg.sender].push(
             Stake({
                 amount: amount,
@@ -66,10 +77,13 @@ abstract contract StakingBase {
 
         uint256 index = stakes[msg.sender].length - 1;
 
+        totalStaked += _amount;
+
         emit Staked(msg.sender, index, amount, startTime);
     }
 
-    function withdraw(uint256 _index) external virtual {
+    function withdraw(uint256 _index) external virtual nonReentrant {
+        require(_index < stakes[msg.sender].length, "Invalid stake index");
         Stake storage userStake = stakes[msg.sender][_index];
 
         require(!userStake.withdrawn, "Stake already withdrawn");
@@ -80,6 +94,8 @@ abstract contract StakingBase {
         uint256 reward = calculateReward(userStake.amount, duration);
 
         userStake.withdrawn = true;
+
+        totalStaked -= userStake.amount;
 
         stakingToken.safeTransfer(msg.sender, userStake.amount);
         rewardToken.safeTransfer(msg.sender, reward);
@@ -114,7 +130,7 @@ abstract contract StakingBase {
         uint256 totalStakes = userStakes.length;
 
         if (_start >= totalStakes) {
-            return new StakeDetail[](0); // Return empty array if start index is beyond the array size
+            return new StakeDetail[](0);
         }
 
         uint256 end = _start + _count;
@@ -166,7 +182,24 @@ abstract contract StakingBase {
         view
         returns (uint256)
     {
-        uint256 reward = (_amount * annualYield * _time * NUMERATOR) / DENOMINATOR;
-        return reward;
+        return (_amount * annualYield * _time * NUMERATOR) / DENOMINATOR;
+    }
+    
+    function getPoolDetails()
+        external
+        view
+        returns (
+            uint256 _maxTotalStake,
+            uint256 _totalStaked,
+            uint64 _annualYield,
+            uint64 _duration
+        )
+    {
+        return (
+            maxTotalStake,
+            totalStaked,
+            annualYield,
+            duration
+        );
     }
 }
