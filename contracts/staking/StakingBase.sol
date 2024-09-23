@@ -4,13 +4,14 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-abstract contract StakingBase is ReentrancyGuard {
+contract StakingBase is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable stakingToken;
     IERC20 public immutable rewardToken;
     uint64 public immutable annualYield; 
     uint64 public immutable duration;    
+    uint64 public immutable unstakePeriod;
 
     uint256 public immutable maxTotalStake; 
     uint256 public totalStaked;  
@@ -22,40 +23,48 @@ abstract contract StakingBase is ReentrancyGuard {
         uint128 amount;
         uint128 startTime;
         bool withdrawn;
+        bool unstaked;
+        uint128 unstakeEndTimestamp;
     }
 
     struct StakeDetail {
         uint256 index;
-        uint256 amount;
-        uint256 startTime;
-        uint256 endTime;
+        uint128 amount;
+        uint128 startTime;
+        uint128 endTime;
         bool withdrawn;
-        uint256 currentReward;
+        uint128 currentReward;
+        bool unstaked;
+        uint128 unstakeEndTimestamp;
     }
 
     mapping(address => Stake[]) public stakes;
 
     event Staked(address indexed user, uint256 index, uint256 amount, uint256 startTime);
-    event Withdrawn(address indexed user, uint256 index, uint256 amount, uint256 reward);
+    event Unstaked(address indexed user, uint256 index, uint256 amount, uint128 unstakeEndTimestamp, uint256 timestampNow);
+    event Withdrawn(address indexed user, uint256 index, uint128 amount, uint128 reward, bool isUnstaked);
 
     constructor(
         IERC20 _stakingToken,
         IERC20 _rewardToken,
         uint64 _annualYield,
         uint64 _duration,
-        uint256 _maxTotalStake
+        uint256 _maxTotalStake,
+        uint64 _unstakePeriod
     ) {
         require(address(_stakingToken) != address(0), "Invalid staking token address");
         require(address(_rewardToken) != address(0), "Invalid reward token address");
         require(_annualYield > 0, "Annual yield must be greater than 0");
         require(_duration > 0, "Duration must be greater than 0");
         require(_maxTotalStake > 0, "Max total stake must be greater than 0");
+        require(_unstakePeriod > 0, "Unstake period must be greater than 0");
 
         stakingToken = _stakingToken;
         rewardToken = _rewardToken;
         annualYield = _annualYield;
         duration = _duration;
         maxTotalStake = _maxTotalStake;
+        unstakePeriod = _unstakePeriod;
     }
 
     function stake(uint256 _amount) external virtual nonReentrant {
@@ -71,7 +80,9 @@ abstract contract StakingBase is ReentrancyGuard {
             Stake({
                 amount: amount,
                 startTime: startTime,
-                withdrawn: false
+                withdrawn: false,
+                unstaked: false,
+                unstakeEndTimestamp: 0
             })
         );
 
@@ -82,25 +93,51 @@ abstract contract StakingBase is ReentrancyGuard {
         emit Staked(msg.sender, index, amount, startTime);
     }
 
+    function unstake(uint256 _index) external virtual nonReentrant {
+        require(_index < stakes[msg.sender].length, "Invalid stake index");
+        Stake storage userStake = stakes[msg.sender][_index];
+
+        require(!userStake.withdrawn, "Stake already withdrawn");
+        require(!userStake.unstaked, "Stake already unstaked");
+
+        uint256 endTime = uint256(userStake.startTime) + uint256(duration);
+        require(block.timestamp < endTime, "Stake period is already completed");
+
+        userStake.unstaked = true;
+        userStake.unstakeEndTimestamp = uint128(block.timestamp) + uint128(unstakePeriod);
+
+        emit Unstaked(msg.sender, _index, userStake.amount, userStake.unstakeEndTimestamp, block.timestamp);
+    }
+
     function withdraw(uint256 _index) external virtual nonReentrant {
         require(_index < stakes[msg.sender].length, "Invalid stake index");
         Stake storage userStake = stakes[msg.sender][_index];
 
         require(!userStake.withdrawn, "Stake already withdrawn");
 
-        uint256 endTime = uint256(userStake.startTime) + uint256(duration);
-        require(block.timestamp >= endTime, "Stake period not yet completed");
+        if (userStake.unstaked) {
+            require(block.timestamp >= userStake.unstakeEndTimestamp, "Unstake period not yet completed");
+            userStake.withdrawn = true;
+            totalStaked -= userStake.amount;
 
-        uint256 reward = calculateReward(userStake.amount, duration);
+            stakingToken.safeTransfer(msg.sender, userStake.amount);
+            emit Withdrawn(msg.sender, _index, userStake.amount, 0, userStake.unstaked);
 
-        userStake.withdrawn = true;
+            return;
+        } else {
+            uint256 endTime = uint256(userStake.startTime) + uint256(duration);
+            require(block.timestamp >= endTime, "Stake period not yet completed");
 
-        totalStaked -= userStake.amount;
+            uint256 reward = calculateReward(userStake.amount, duration);
 
-        stakingToken.safeTransfer(msg.sender, userStake.amount);
-        rewardToken.safeTransfer(msg.sender, reward);
+            userStake.withdrawn = true;
 
-        emit Withdrawn(msg.sender, _index, userStake.amount, reward);
+            stakingToken.safeTransfer(msg.sender, userStake.amount);
+            rewardToken.safeTransfer(msg.sender, reward);
+
+            emit Withdrawn(msg.sender, _index, userStake.amount, uint128(reward), userStake.unstaked);
+        }
+
     }
 
     function getStakeCount(address _user) external view returns (uint256) {
@@ -153,19 +190,21 @@ abstract contract StakingBase is ReentrancyGuard {
         uint256 _index,
         Stake storage userStake
     ) internal view returns (StakeDetail memory) {
-        uint256 amount = userStake.amount;
-        uint256 startTime = userStake.startTime;
-        uint256 endTime = startTime + duration;
+        uint128 amount = userStake.amount;
+        uint128 startTime = userStake.startTime;
+        uint128 endTime = startTime + duration;
         bool withdrawn = userStake.withdrawn;
+        bool unstaked = userStake.unstaked;
+        uint128 unstakeEndTimestamp = userStake.unstakeEndTimestamp;
 
-        uint256 elapsedTime;
+        uint128 elapsedTime;
         if (block.timestamp >= endTime) {
             elapsedTime = duration;
         } else {
-            elapsedTime = block.timestamp - startTime;
+            elapsedTime = uint128(block.timestamp - startTime);
         }
 
-        uint256 currentReward = calculateReward(amount, elapsedTime);
+        uint128 currentReward = unstaked ? 0 : uint128(calculateReward(amount, elapsedTime));
 
         return StakeDetail({
             index: _index,
@@ -173,7 +212,9 @@ abstract contract StakingBase is ReentrancyGuard {
             startTime: startTime,
             endTime: endTime,
             withdrawn: withdrawn,
-            currentReward: currentReward
+            currentReward: currentReward,
+            unstaked: unstaked,
+            unstakeEndTimestamp: unstakeEndTimestamp
         });
     }
 
@@ -192,14 +233,16 @@ abstract contract StakingBase is ReentrancyGuard {
             uint256 _maxTotalStake,
             uint256 _totalStaked,
             uint64 _annualYield,
-            uint64 _duration
+            uint64 _duration,
+            uint64 _unstakePeriod
         )
     {
         return (
             maxTotalStake,
             totalStaked,
             annualYield,
-            duration
+            duration,
+            unstakePeriod
         );
     }
 }
