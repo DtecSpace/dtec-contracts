@@ -20,20 +20,20 @@ contract StakingBase is ReentrancyGuard {
     uint256 private constant DENOMINATOR = NUMERATOR * 10000 * 365 days; 
 
     struct Stake {
-        uint128 amount;
+        uint256 amount;
         uint128 startTime;
+        uint128 unstakeEndTimestamp;
         bool withdrawn;
         bool unstaked;
-        uint128 unstakeEndTimestamp;
     }
 
     struct StakeDetail {
         uint256 index;
-        uint128 amount;
+        uint256 amount;
         uint128 startTime;
         uint128 endTime;
         bool withdrawn;
-        uint128 currentReward;
+        uint256 currentReward;
         bool unstaked;
         uint128 unstakeEndTimestamp;
     }
@@ -42,7 +42,7 @@ contract StakingBase is ReentrancyGuard {
 
     event Staked(address indexed user, uint256 index, uint256 amount, uint256 startTime);
     event Unstaked(address indexed user, uint256 index, uint256 amount, uint128 unstakeEndTimestamp, uint256 timestampNow);
-    event Withdrawn(address indexed user, uint256 index, uint128 amount, uint128 reward, bool isUnstaked);
+    event Withdrawn(address indexed user, uint256 index, uint256 amount, uint256 reward, bool isUnstaked);
 
     constructor(
         IERC20 _stakingToken,
@@ -73,7 +73,7 @@ contract StakingBase is ReentrancyGuard {
 
         stakingToken.safeTransferFrom(msg.sender, address(this), _amount);
 
-        uint128 amount = uint128(_amount);
+        uint256 amount = _amount;
         uint128 startTime = uint128(block.timestamp);
 
         stakes[msg.sender].push(
@@ -135,7 +135,7 @@ contract StakingBase is ReentrancyGuard {
             stakingToken.safeTransfer(msg.sender, userStake.amount);
             rewardToken.safeTransfer(msg.sender, reward);
 
-            emit Withdrawn(msg.sender, _index, userStake.amount, uint128(reward), userStake.unstaked);
+            emit Withdrawn(msg.sender, _index, userStake.amount, reward, userStake.unstaked);
         }
 
     }
@@ -190,7 +190,7 @@ contract StakingBase is ReentrancyGuard {
         uint256 _index,
         Stake storage userStake
     ) internal view returns (StakeDetail memory) {
-        uint128 amount = userStake.amount;
+        uint256 amount = userStake.amount;
         uint128 startTime = userStake.startTime;
         uint128 endTime = startTime + duration;
         bool withdrawn = userStake.withdrawn;
@@ -204,7 +204,7 @@ contract StakingBase is ReentrancyGuard {
             elapsedTime = uint128(block.timestamp - startTime);
         }
 
-        uint128 currentReward = unstaked ? 0 : uint128(calculateReward(amount, elapsedTime));
+        uint256 currentReward = unstaked ? 0 : calculateReward(amount, elapsedTime);
 
         return StakeDetail({
             index: _index,
