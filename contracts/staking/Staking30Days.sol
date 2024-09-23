@@ -5,20 +5,14 @@ import "./StakingBase.sol";
 
 contract DTEC30DaysStaking is StakingBase {
 
-constructor(
-        IERC20 _stakingToken,
-        IERC20 _rewardToken,
-        uint64 _annualYield,
-        uint64 _duration,
-        uint256 _maxTotalStake
-    ) StakingBase (
-        _stakingToken,
-        _rewardToken,
-        _annualYield,
-        _duration,
-        _maxTotalStake
+    constructor() StakingBase (
+        IERC20(0xd87aF7B418d64FF2cdE48d890285bA64fc6E115F), // DTEC staking token
+        IERC20(0xd87aF7B418d64FF2cdE48d890285bA64fc6E115F), // DTEC reward token 
+        2500, // 25% annual yield
+        30 days, // 30 days in seconds
+        1_000_000 * 10**18, // 1 million tokens
+        14 days // 14 days in seconds
     ) {
-
     }
 
 }
