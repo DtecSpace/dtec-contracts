@@ -16,8 +16,9 @@ contract StakingBase is ReentrancyGuard, Ownable {
 
     uint256 public immutable maxTotalStake; 
     uint256 public totalStaked;  
+    uint256 public totalRewardPaid;
 
-    uint256 private constant NUMERATOR = 1_000_000; 
+    uint256 private constant NUMERATOR = 1_000_000_000; 
     uint256 private constant DENOMINATOR = NUMERATOR * 10000 * 365 days; 
 
     struct Stake {
@@ -41,7 +42,7 @@ contract StakingBase is ReentrancyGuard, Ownable {
 
     mapping(address => Stake[]) public stakes;
 
-    event Staked(address indexed user, uint256 index, uint256 amount, uint256 startTime);
+    event Staked(address indexed user, uint256 index, uint256 amount, uint128 startTime);
     event Unstaked(address indexed user, uint256 index, uint256 amount, uint128 unstakeEndTimestamp, uint256 timestampNow);
     event Withdrawn(address indexed user, uint256 index, uint256 amount, uint256 reward, bool isUnstaked);
 
@@ -74,12 +75,11 @@ contract StakingBase is ReentrancyGuard, Ownable {
 
         stakingToken.safeTransferFrom(msg.sender, address(this), _amount);
 
-        uint256 amount = _amount;
         uint128 startTime = uint128(block.timestamp);
 
         stakes[msg.sender].push(
             Stake({
-                amount: amount,
+                amount: _amount,
                 startTime: startTime,
                 withdrawn: false,
                 unstaked: false,
@@ -91,7 +91,7 @@ contract StakingBase is ReentrancyGuard, Ownable {
 
         totalStaked += _amount;
 
-        emit Staked(msg.sender, index, amount, startTime);
+        emit Staked(msg.sender, index, _amount, startTime);
     }
 
     function unstake(uint256 _index) external virtual nonReentrant {
@@ -132,7 +132,7 @@ contract StakingBase is ReentrancyGuard, Ownable {
             uint256 reward = calculateReward(userStake.amount, duration);
 
             userStake.withdrawn = true;
-
+            totalRewardPaid += reward;
             stakingToken.safeTransfer(msg.sender, userStake.amount);
             rewardToken.safeTransfer(msg.sender, reward);
 
