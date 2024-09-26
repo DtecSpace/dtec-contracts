@@ -21,6 +21,8 @@ contract StakingBase is ReentrancyGuard, Ownable {
     uint256 private constant NUMERATOR = 1_000_000_000; 
     uint256 private constant DENOMINATOR = NUMERATOR * 10000 * 365 days; 
 
+    bool public stakingActive;
+
     struct Stake {
         uint256 amount;
         uint128 startTime;
@@ -45,6 +47,7 @@ contract StakingBase is ReentrancyGuard, Ownable {
     event Staked(address indexed user, uint256 index, uint256 amount, uint128 startTime);
     event Unstaked(address indexed user, uint256 index, uint256 amount, uint128 unstakeEndTimestamp, uint256 timestampNow);
     event Withdrawn(address indexed user, uint256 index, uint256 amount, uint256 reward, bool isUnstaked);
+    event StakingStatusChanged(bool isActive);
 
     constructor(
         IERC20 _stakingToken,
@@ -67,9 +70,11 @@ contract StakingBase is ReentrancyGuard, Ownable {
         duration = _duration;
         maxTotalStake = _maxTotalStake;
         unstakePeriod = _unstakePeriod;
+        stakingActive = true;
     }
 
     function stake(uint256 _amount) external virtual nonReentrant {
+        require(stakingActive, "Staking is not active");
         require(_amount > 0, "Cannot stake zero tokens");
         require(totalStaked + _amount <= maxTotalStake, "Staking pool limit reached");
 
@@ -250,5 +255,10 @@ contract StakingBase is ReentrancyGuard, Ownable {
     function withdrawTokens(IERC20 token, uint256 amount) external onlyOwner {
         require(amount > 0, "Cannot withdraw zero tokens");
         token.safeTransfer(owner(), amount);
+    }
+
+    function setStakingStatus(bool _isActive) external onlyOwner {
+        stakingActive = _isActive;
+        emit StakingStatusChanged(_isActive);
     }
 }
