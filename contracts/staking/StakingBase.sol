@@ -240,7 +240,9 @@ contract StakingBase is ReentrancyGuard, Ownable {
             uint256 _totalStaked,
             uint64 _annualYield,
             uint64 _duration,
-            uint64 _unstakePeriod
+            uint64 _unstakePeriod,
+            uint256 _totalRewardPaid,
+            bool _stakingActive
         )
     {
         return (
@@ -248,7 +250,9 @@ contract StakingBase is ReentrancyGuard, Ownable {
             totalStaked,
             annualYield,
             duration,
-            unstakePeriod
+            unstakePeriod,
+            totalRewardPaid,
+            stakingActive
         );
     }
 
