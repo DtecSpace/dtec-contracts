@@ -122,7 +122,7 @@ contract StakingBase is ReentrancyGuard, Ownable {
         require(!userStake.withdrawn, "Stake already withdrawn");
 
         if (userStake.unstaked) {
-            require(block.timestamp >= userStake.unstakeEndTimestamp, "Unstake period not yet completed");
+            require(block.timestamp >= uint256(userStake.unstakeEndTimestamp), "Unstake period not yet completed");
             userStake.withdrawn = true;
             totalStaked -= userStake.amount;
 
@@ -224,12 +224,12 @@ contract StakingBase is ReentrancyGuard, Ownable {
         });
     }
 
-    function calculateReward(uint256 _amount, uint256 _time)
+    function calculateReward(uint256 _amount, uint256 _elapsedTime)
         public
         view
         returns (uint256)
     {
-        return (_amount * annualYield * _time * NUMERATOR) / DENOMINATOR;
+        return (_amount * annualYield * _elapsedTime * NUMERATOR) / DENOMINATOR;
     }
     
     function getPoolDetails()
