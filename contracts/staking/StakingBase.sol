@@ -110,7 +110,8 @@ contract StakingBase is ReentrancyGuard, Ownable {
         require(block.timestamp < endTime, "Stake period is already completed");
 
         userStake.unstaked = true;
-        userStake.unstakeEndTimestamp = uint128(block.timestamp) + uint128(unstakePeriod);
+        uint256 calculatedUnstakeEndTimestamp = block.timestamp + unstakePeriod;
+        userStake.unstakeEndTimestamp = uint128(calculatedUnstakeEndTimestamp > endTime ? endTime : calculatedUnstakeEndTimestamp);
 
         emit Unstaked(msg.sender, _index, userStake.amount, userStake.unstakeEndTimestamp, block.timestamp);
     }
