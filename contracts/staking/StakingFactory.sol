@@ -35,6 +35,8 @@ contract StakingFactory is Ownable {
             _unstakePeriod
         );
 
+        newStakingContract.transferOwnership(msg.sender);
+
         address stakingContractAddress = address(newStakingContract);
         stakingContracts.push(stakingContractAddress);
         isStakingContract[stakingContractAddress] = true;
@@ -80,16 +82,18 @@ contract StakingFactory is Ownable {
             uint64 duration,
             uint256 maxTotalStake,
             uint256 totalStaked,
-            uint64 unstakePeriod
+            uint64 unstakePeriod,
+            uint256 totalRewardPaid,
+            bool stakingActive
         ) 
     {
         require(isStakingContract[_stakingContract], "Not a valid staking contract");
         
         StakingBase stakingInstance = StakingBase(_stakingContract);
-        (maxTotalStake, totalStaked, annualYield, duration, unstakePeriod) = stakingInstance.getPoolDetails();
+        (maxTotalStake, totalStaked, annualYield, duration, unstakePeriod, totalRewardPaid, stakingActive) = stakingInstance.getPoolDetails();
         stakingToken = stakingInstance.stakingToken();
         rewardToken = stakingInstance.rewardToken();
         
-        return (stakingToken, rewardToken, annualYield, duration, maxTotalStake, totalStaked, unstakePeriod);
+        return (stakingToken, rewardToken, annualYield, duration, maxTotalStake, totalStaked, unstakePeriod, totalRewardPaid, stakingActive);
     }
 }
